@@ -10,6 +10,10 @@ external process, proxy or launch flag: install the mod, start the game, point y
 It is useful for in-engine testing of your own BeamNG mods, poking at live telemetry, scripted
 automation, and exploring the game's Lua APIs with an agent.
 
+A separate [BeamMP server target](docs/beammp.md) packages a resource-contained helper and optional
+plugin bridges for server-side Lua inspection, evaluation, event diagnostics and player/vehicle
+snapshots. It works without a connected game; game physics and visual tools remain in this target.
+
 ## Highlights
 
 - **39 MCP tools** covering Lua/JS evaluation, Lua API discovery, bounded runtime observation,

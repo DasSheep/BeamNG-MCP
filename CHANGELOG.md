@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- BeamMP server target with a bundled helper, authenticated loopback HTTP and an SSH stdio adapter.
+- Optional per-plugin file-queue bridges for bounded Lua inspection/evaluation, observation,
+  server/player/vehicle reads, print logs and lifecycle events. No client eval event is registered.
+- Reload generation checks, queued-request cancellation, heartbeat shutdown and resource packaging.
+- Native Lua 5.3 bridge integration and Go transport/lifecycle tests.
+
 ## [0.1.0] - 2026-10-24
 
 Initial public release.

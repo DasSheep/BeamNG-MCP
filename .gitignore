@@ -43,3 +43,8 @@ agent-tools/
 .env
 .env.*
 !.env.example
+
+# BeamMP deployment secrets and transient IPC
+/beammp/BeamMCP/config.json
+/beammp/BeamMCP/token
+/beammp/BeamMCP/.runtime/

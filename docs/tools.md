@@ -1,5 +1,8 @@
 # Tool reference
 
+This page covers the game target. The separate [BeamMP server tool reference](beammp.md#tools)
+covers server resources and plugin-state development.
+
 BeamNG-MCP registers **39 tools**. This page documents every one of them: what it does, when to reach
 for it, its parameters, and whether it only reads or also changes the game.
 
