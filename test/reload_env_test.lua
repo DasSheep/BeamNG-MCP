@@ -1,0 +1,48 @@
+require("support.beamng_stubs")
+local stub = require("support.stub")
+local env  = require("beammcp/reload/env")
+
+test("levelDir derives /levels/<name>/ from a mission path", function()
+  assertEqual(env.levelDir("/levels/west_coast_usa/main.level.json"), "/levels/west_coast_usa/")
+  assertEqual(env.levelDir("/levels/east_coast_usa/info.json"), "/levels/east_coast_usa/")
+  assertEqual(env.levelDir("levels/gridmap_v2/main.level.json"), "/levels/gridmap_v2/")
+end)
+
+test("levelDir returns nil for empty or non-level paths", function()
+  assertNil(env.levelDir(""))
+  assertNil(env.levelDir(nil))
+  assertNil(env.levelDir("/vehicles/pickup/x.pc"))
+end)
+
+test("mission returns '' when getMissionFilename is absent", function()
+  stub.with(_G, { getMissionFilename = stub.NIL }, function()
+    assertEqual(env.mission(), "")
+  end)
+end)
+
+test("mission returns the engine value", function()
+  stub.with(_G, { getMissionFilename = function() return "/levels/a/main.level.json" end }, function()
+    assertEqual(env.mission(), "/levels/a/main.level.json")
+  end)
+end)
+
+test("loading recognizes the truthy forms of $loadingLevel", function()
+  for _, v in ipairs({ true, 1, "1", "true" }) do
+    stub.with(_G, { VariableRegistry = { get = function() return v end } }, function()
+      assertEqual(env.loading(), true, "value " .. tostring(v))
+    end)
+  end
+  stub.with(_G, { VariableRegistry = { get = function() return "0" end } }, function()
+    assertEqual(env.loading(), false)
+  end)
+  stub.with(_G, { VariableRegistry = stub.NIL }, function()
+    assertEqual(env.loading(), false)
+  end)
+end)
+
+test("hasPlayerVehicle is false without an engine and true with a vehicle", function()
+  stub.with(_G, { be = stub.NIL }, function() assertEqual(env.hasPlayerVehicle(), false) end)
+  stub.with(_G, { be = { getPlayerVehicle = function() return {} end } }, function()
+    assertEqual(env.hasPlayerVehicle(), true)
+  end)
+end)

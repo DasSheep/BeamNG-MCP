@@ -1,0 +1,47 @@
+require('support.beamng_stubs')
+local function output()
+  local ok,m=pcall(require,'beammcp/output'); assertTrue(ok,'shared output limits must exist'); return m
+end
+test('output preserves small values including false',function()
+  local r=output().fit({value=false,output='hello'},1024)
+  assertEqual(r.value,false); assertEqual(r.output,'hello'); assertNil(r.truncated)
+end)
+test('encoded budgets include escaped strings and bound large nested values',function()
+  local value={}; for i=1,1000 do value[i]=string.rep('\001',1000) end
+  local r=output().fit({value=value,output=string.rep('x',10000)},1024)
+  assertTrue(#jsonEncode(r)<=1024); assertTrue(r.truncated)
+end)
+test('cycles and opaque results do not execute metamethods',function()
+  local t={}; t.self=t
+  local p=newproxy(true); getmetatable(p).__tostring=function() error('unsafe') end
+  local r=output().fit({value={t,p,0/0,math.huge}},4096)
+  assertTrue(#jsonEncode(r)<=4096); assertTrue(r.truncated)
+end)
+test('clipping preserves UTF8 and escapes invalid bytes within the byte cap',function()
+  local emoji=string.char(240,159,154,151)
+  local text,truncated=output().clip(emoji..emoji,5)
+  assertEqual(text,emoji); assertTrue(truncated)
+  text,truncated=output().clip(string.char(255)..'x',4)
+  assertEqual(text,'\\xFF'); assertTrue(truncated)
+end)
+test('eval captures bounded prints and restores print after error',function()
+  local original=print
+  local r=output().execute("for i=1,1000 do print(string.rep('x',1000)) end; error('boom')",1024)
+  assertEqual(print,original); assertEqual(r.ok,false); assertTrue(r.truncated)
+  assertMatch(r.err,'boom'); assertTrue(#jsonEncode(r)<=1024)
+end)
+test('budget validation rejects NaN infinity fractions and strings',function()
+  for _,v in ipairs({0/0,math.huge,1.5,'4096',false,1023,16385}) do
+    local b,e=output().budget(v); assertNil(b); assertEqual(type(e),'string')
+  end
+  assertEqual(output().budget(nil),4096)
+end)
+test('internal vehicle budget preserves complete source-sized strings',function()
+  local text=string.rep('x',16384)
+  local r=output().fit({ok=true,value={text=text}},262144)
+  assertEqual(r.value.text,text);assertNil(r.truncated)
+end)
+test('encoded error text including truncation notice stays within budget',function()
+  local text=output().errorText(string.rep('x',5000),nil,1024)
+  assertTrue(#jsonEncode(text)<=1024);assertMatch(text,'truncated')
+end)

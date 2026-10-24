@@ -1,0 +1,30 @@
+# Normalize line endings: default to LF in the repo, auto-convert on checkout.
+* text=auto eol=lf
+
+# Source / docs — always LF (BeamNG reads either; consistency keeps diffs clean)
+*.lua   text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.jbeam text eol=lf
+*.js    text eol=lf
+*.ts    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Windows-native scripts — keep CRLF (safer for PowerShell signing / batch parsing)
+*.ps1   text eol=crlf
+*.psm1  text eol=crlf
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# Binary assets — never normalize or diff as text
+*.zip   binary
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.dds   binary
+*.mp3   binary
+*.ogg   binary
+*.ttf   binary
+*.otf   binary
+*.luac  binary
