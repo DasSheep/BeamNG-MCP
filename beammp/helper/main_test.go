@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -307,5 +308,31 @@ func TestFailedHelperStartCleansItsSession(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(root, ".runtime", "active.json")); !os.IsNotExist(err) {
 		t.Fatal("failed-start pointer leaked")
+	}
+}
+
+func TestExistingTokenRegainsOwnerOnlyPermissions(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Unix file permission contract")
+	}
+	root := t.TempDir()
+	path := filepath.Join(root, "token")
+	token := strings.Repeat("a", 64)
+	if err := os.WriteFile(path, []byte(token+"\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(path, 0770); err != nil {
+		t.Fatal(err)
+	}
+	actual, err := getToken(root)
+	if err != nil || actual != token {
+		t.Fatal("existing token changed", err)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0600 {
+		t.Fatalf("token permissions are %04o, want 0600", info.Mode().Perm())
 	}
 }

@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Restore owner-only permissions on existing BeamMP tokens when container startup resets file modes.
+
 ### Added
 
 - BeamMP server target with a bundled helper, authenticated loopback HTTP and an SSH stdio adapter.

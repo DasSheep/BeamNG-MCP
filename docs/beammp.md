@@ -19,8 +19,9 @@ for trusted development access. `listen` defaults to `127.0.0.1:23513`; only num
 addresses are accepted. On Linux, retain executable permission on `lib/beammcp-helper`.
 
 The first start creates a cryptographically random bearer token in `BeamMCP/token` with owner-only
-permissions. Protect the resource directory and its configuration with the server account's filesystem
-permissions. The helper inherits that account's privileges. Do not put this resource or its token in
+permissions. The helper restores those permissions on existing tokens at startup, including when a
+container entrypoint has reset file modes. Protect the resource directory and its configuration with
+the server account's filesystem permissions. The helper inherits that account's privileges. Do not put this resource or its token in
 `Resources/Client` or an archive served to players. Runtime sessions and tokens are excluded from Git.
 
 For each plugin to inspect, copy `beammp/examples/z_beammcp.lua` into that plugin's top-level directory

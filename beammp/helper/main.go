@@ -416,6 +416,9 @@ func getToken(root string) (string, error) {
 	path := filepath.Join(root, "token")
 	b, err := readFile(path, 256)
 	if err == nil && len(strings.TrimSpace(string(b))) >= 32 {
+		if err := os.Chmod(path, 0600); err != nil {
+			return "", fmt.Errorf("secure token permissions: %w", err)
+		}
 		return strings.TrimSpace(string(b)), nil
 	}
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
